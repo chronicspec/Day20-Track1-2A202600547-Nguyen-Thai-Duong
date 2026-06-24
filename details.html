@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chi tiết phân tích đánh giá</title>
+  <style>
+    :root {
+      --bg: #f5f7fb; --card: #fff; --text: #172033; --muted: #667085;
+      --primary: #2563eb; --border: #e4e7ec; --success: #16a34a;
+      --warning: #d97706; --danger: #dc2626;
+      --shadow: 0 14px 40px rgba(16, 24, 40, .08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; font-family: Inter, Arial, sans-serif; color: var(--text);
+      background: var(--bg); line-height: 1.5;
+    }
+    .topbar {
+      position: sticky; top: 0; z-index: 10; display: flex;
+      justify-content: space-between; align-items: center; gap: 20px;
+      padding: 16px max(20px, calc((100% - 1120px) / 2));
+      background: rgba(255,255,255,.94); border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+    }
+    .brand { font-weight: 800; }
+    .back { color: var(--primary); text-decoration: none; font-weight: 700; }
+    main { width: min(1120px, calc(100% - 40px)); margin: auto; padding: 42px 0 64px; }
+    .hero {
+      display: flex; justify-content: space-between; align-items: end;
+      gap: 24px; margin-bottom: 28px; scroll-margin-top: 90px;
+    }
+    .eyebrow {
+      margin: 0 0 8px; color: var(--primary); font-size: 13px;
+      font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+    }
+    h1 { margin: 0; font-size: clamp(30px, 5vw, 46px); }
+    h2 { margin-top: 0; }
+    .muted { color: var(--muted); }
+    .button {
+      display: inline-block; padding: 12px 18px; color: #fff;
+      background: var(--primary); border-radius: 12px; text-decoration: none;
+      font-weight: 700; white-space: nowrap;
+    }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .card {
+      padding: 24px; background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; box-shadow: var(--shadow);
+    }
+    .metric strong { display: block; margin: 4px 0; font-size: 34px; }
+    .wide { grid-column: 1 / -1; margin-top: 18px; scroll-margin-top: 90px; }
+    .bar-row {
+      display: grid; grid-template-columns: 100px 1fr 52px;
+      align-items: center; gap: 12px; margin: 15px 0;
+    }
+    .track { height: 10px; overflow: hidden; background: #edf0f5; border-radius: 999px; }
+    .fill { height: 100%; border-radius: inherit; }
+    .positive { background: var(--success); }
+    .neutral { background: var(--warning); }
+    .negative { background: var(--danger); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 14px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-size: 13px; }
+    .tag {
+      display: inline-block; padding: 4px 9px; border-radius: 999px;
+      color: #9a3412; background: #ffedd5; font-size: 12px; font-weight: 800;
+    }
+    .quality-list {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+      padding: 0; list-style: none;
+    }
+    .quality-list li {
+      padding: 16px; background: #f8fafc; border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+    code { padding: 3px 7px; background: #eef2ff; border-radius: 6px; }
+    @media (max-width: 760px) {
+      .hero { align-items: start; flex-direction: column; }
+      .grid { grid-template-columns: 1fr; }
+      .wide { grid-column: auto; }
+      .quality-list { grid-template-columns: 1fr; }
+      .table-wrap { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="topbar">
+    <span class="brand">Bộ phân loại đánh giá khách hàng</span>
+    <a class="back" href="preview.html">Quay lại trang tải lên</a>
+  </nav>
+
+  <main>
+    <section class="hero" id="overview">
+      <div>
+        <p class="eyebrow">Phân tích hoàn tất</p>
+        <h1>Insight từ đánh giá khách hàng</h1>
+        <p class="muted">customer_reviews_june.xlsx - 2,450 đánh giá - Cập nhật ngày 18/06/2026</p>
+      </div>
+      <a class="button" href="#uncertain">Review mục chưa chắc chắn</a>
+    </section>
+
+    <section class="grid">
+      <article class="card metric">
+        <span class="muted">Cảm xúc tích cực</span><strong>64%</strong>
+        <span style="color:var(--success)">Tăng 8% so với tháng trước</span>
+      </article>
+      <article class="card metric">
+        <span class="muted">Cần chú ý</span><strong>186</strong>
+        <span class="muted">Đánh giá có độ tin cậy thấp</span>
+      </article>
+      <article class="card metric">
+        <span class="muted">Độ tin cậy trung bình</span><strong>87%</strong>
+        <span class="muted">Phân loại đáng tin cậy</span>
+      </article>
+
+      <article class="card wide">
+        <h2>Phân bố cảm xúc</h2>
+        <div class="bar-row"><span>Tích cực</span><div class="track"><div class="fill positive" style="width:64%"></div></div><strong>64%</strong></div>
+        <div class="bar-row"><span>Trung lập</span><div class="track"><div class="fill neutral" style="width:21%"></div></div><strong>21%</strong></div>
+        <div class="bar-row"><span>Tiêu cực</span><div class="track"><div class="fill negative" style="width:15%"></div></div><strong>15%</strong></div>
+      </article>
+
+      <article class="card wide">
+        <h2>Chủ đề khách hàng nổi bật</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Chủ đề</th><th>Đánh giá</th><th>Cảm xúc</th><th>Hành động đề xuất</th></tr></thead>
+            <tbody>
+              <tr><td>Chất lượng sản phẩm</td><td>742</td><td>82% tích cực</td><td>Dùng các trích dẫn tích cực trong marketing</td></tr>
+              <tr><td>Giao hàng</td><td>526</td><td>31% tiêu cực</td><td>Rà soát các tuyến giao hàng trễ</td></tr>
+              <tr><td>Hỗ trợ khách hàng</td><td>418</td><td>69% tích cực</td><td>Cải thiện thời gian phản hồi cuối tuần</td></tr>
+              <tr><td>Giá cả</td><td>297</td><td>44% trung lập</td><td>Làm rõ giá trị gói dịch vụ và các mục bao gồm</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="card wide" id="uncertain">
+        <h2>Đánh giá chưa chắc chắn</h2>
+        <p class="muted">Các ví dụ này có ngôn ngữ hỗn hợp hoặc chưa đầy đủ, nên cần kiểm tra thủ công.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Đánh giá</th><th>Kết quả AI</th><th>Độ tin cậy</th></tr></thead>
+            <tbody>
+              <tr><td>"Sản phẩm tốt, nhưng giao hàng quá lâu."</td><td><span class="tag">Hỗn hợp</span></td><td>61%</td></tr>
+              <tr><td>"Cũng tạm được."</td><td><span class="tag">Trung lập</span></td><td>58%</td></tr>
+              <tr><td>"Hỗ trợ cuối cùng cũng xử lý được."</td><td><span class="tag">Hỗn hợp</span></td><td>63%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="card wide" id="quality">
+        <h2>Báo cáo chất lượng dữ liệu</h2>
+        <ul class="quality-list">
+          <li><strong>2,450 dòng hợp lệ</strong><br><span class="muted">98% bản ghi đã tải lên</span></li>
+          <li><strong>32 dòng trùng lặp</strong><br><span class="muted">Nên cân nhắc loại bỏ bản ghi trùng</span></li>
+          <li><strong>18 đánh giá trống</strong><br><span class="muted">Đã loại khỏi phân tích</span></li>
+          <li><strong>Mã hóa UTF-8</strong><br><span class="muted">Không phát hiện lỗi ký tự</span></li>
+        </ul>
+      </article>
+
+      <article class="card wide" id="sample">
+        <h2>Cấu trúc file mẫu</h2>
+        <p class="muted">File tải lên nên có các cột tương tự như sau:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>review_id</th><th>review_text</th><th>rating</th><th>date</th></tr></thead>
+            <tbody><tr><td>REV-001</td><td>Giao hàng nhanh và chất lượng rất tốt.</td><td>5</td><td>2026-06-01</td></tr></tbody>
+          </table>
+        </div>
+        <p class="muted">Trường bắt buộc: <code>review_text</code></p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

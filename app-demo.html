@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>App Demo - Bộ phân loại đánh giá khách hàng</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #fff;
+      --text: #172033;
+      --muted: #667085;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #e8f0ff;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --border: #e4e7ec;
+      --shadow: 0 14px 38px rgba(16, 24, 40, .08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.5;
+    }
+    button, select { font: inherit; }
+    button { cursor: pointer; }
+    .app {
+      min-height: 100vh;
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 14px max(20px, calc((100% - 1180px) / 2));
+      background: rgba(255,255,255,.94);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 850;
+    }
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      color: #fff;
+      background: var(--primary);
+      font-size: 13px;
+    }
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .link, .button, .secondary, .ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      text-decoration: none;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .link { color: var(--primary); }
+    .button { color: #fff; background: var(--primary); }
+    .button:hover { background: var(--primary-dark); }
+    .secondary { color: var(--primary); background: #fff; border-color: #bfdbfe; }
+    .ghost { color: var(--text); background: #f8fafc; border-color: var(--border); }
+    main {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 28px 0 64px;
+    }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(340px, .95fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+    .panel, .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+    .panel { padding: 28px; }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 850;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0;
+      max-width: 760px;
+      font-size: clamp(30px, 4vw, 46px);
+      line-height: 1.08;
+    }
+    h2 { margin: 0 0 12px; font-size: 25px; }
+    h3 { margin: 0 0 8px; font-size: 17px; }
+    p { margin: 0; }
+    .muted, .subtitle { color: var(--muted); }
+    .subtitle { margin-top: 14px; font-size: 17px; }
+    .step-list {
+      display: grid;
+      gap: 12px;
+      margin: 18px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .step-list li {
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #f8fafc;
+    }
+    .mock-card {
+      display: grid;
+      gap: 14px;
+      padding: 22px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #344054;
+      font-size: 13px;
+      font-weight: 850;
+    }
+    select {
+      width: 100%;
+      min-height: 44px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      background: #fff;
+    }
+    .drop-zone {
+      padding: 22px;
+      border: 2px dashed #c7d7fe;
+      border-radius: 16px;
+      background: #f8fbff;
+    }
+    .drop-zone strong { display: block; margin-bottom: 4px; }
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--warning);
+    }
+    .dot.good { background: var(--success); }
+    .dot.bad { background: var(--danger); }
+    .progress {
+      height: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e5e7eb;
+      margin-top: 16px;
+    }
+    .progress span {
+      display: block;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--primary);
+      transition: width .4s ease;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin: 22px 0;
+    }
+    .card { padding: 20px; }
+    .metric-label {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .metric-value {
+      display: block;
+      margin: 4px 0;
+      font-size: 34px;
+      line-height: 1.1;
+      font-weight: 850;
+    }
+    .metric-note { color: var(--muted); font-size: 13px; }
+    .result-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 18px;
+      align-items: start;
+    }
+    .section-card {
+      padding: 24px;
+      margin-bottom: 18px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .segmented {
+      display: inline-flex;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #f8fafc;
+      flex-wrap: wrap;
+    }
+    .tab {
+      min-height: 34px;
+      padding: 7px 11px;
+      border: 0;
+      border-radius: 9px;
+      color: var(--muted);
+      background: transparent;
+      font-weight: 850;
+    }
+    .tab.active {
+      color: var(--primary);
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(16,24,40,.08);
+    }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 120px 1fr 56px;
+      align-items: center;
+      gap: 12px;
+      margin: 13px 0;
+    }
+    .track {
+      height: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #edf0f5;
+    }
+    .fill { height: 100%; border-radius: inherit; transition: width .35s ease; }
+    .positive { background: var(--success); }
+    .neutral { background: var(--warning); }
+    .negative { background: var(--danger); }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      padding: 13px 10px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .tag {
+      display: inline-flex;
+      min-height: 24px;
+      align-items: center;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .tag.success { color: #166534; background: #dcfce7; }
+    .tag.warning { color: #9a3412; background: #ffedd5; }
+    .tag.danger { color: #991b1b; background: #fee2e2; }
+    .tag.info { color: #1e40af; background: #dbeafe; }
+    .insight-list {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .insight-list li {
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #f8fafc;
+    }
+    .event-log {
+      max-height: 260px;
+      overflow: auto;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+    }
+    .event-log li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      color: #344054;
+    }
+    .hidden { display: none; }
+    @media (max-width: 980px) {
+      .hero, .result-layout { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      main { width: min(100% - 28px, 1180px); }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .grid-4 { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 90px 1fr 48px; }
+      .panel, .card, .section-card { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <nav class="topbar">
+      <div class="brand">
+        <span class="brand-mark">AI</span>
+        <span>Review Insight AI</span>
+      </div>
+      <div class="top-actions">
+        <a class="link" href="preview.html">Trang chủ</a>
+        <!-- <a class="link" href="lab-report.html">Báo cáo lab</a>
+        <button class="secondary" type="button" id="resetBtn">Reset app</button> -->
+      </div>
+    </nav>
+
+    <main>
+      <section class="screen active" id="screenOnboarding">
+        <!-- <div class="hero"> -->
+          <div class="panel">
+            <p class="eyebrow">Onboarding</p>
+            <h1>Biến review khách hàng thành hành động</h1>
+            <p class="subtitle">
+              Tải file review lên và xem vấn đề nào cần xử lý.
+            </p>
+            <ul class="step-list">
+              <li><strong>1. Upload data</strong></li>
+              <li><strong>2. Chạy phân tích</strong></li>
+              <li><strong>3. Xem insight</strong></li>
+            </ul>
+            <div class="button-row" style="margin-top:22px">
+              <button class="button" type="button" data-go="upload" id="quickDemoBtn">Bắt đầu</button>
+              <!-- <button class="secondary" type="button" id="quickDemoBtn" hidden></button> -->
+            </div>
+          </div>
+          <!-- <div class="panel">
+            <p class="eyebrow">Aha moment</p>
+            <h2>Giá trị đầu tiên cần thấy</h2>
+            <p class="muted">Sau core action, người dùng phải thấy ngay: vấn đề nổi bật, mức độ tin cậy và hành động đề xuất.</p>
+            <div class="step-list">
+              <li><strong>Core action</strong><br><span class="muted">Phân tích thành công một file review hợp lệ.</span></li>
+              <li><strong>Active user</strong><br><span class="muted">Hoàn tất ít nhất một phân tích trong tháng.</span></li>
+              <li><strong>Retention</strong><br><span class="muted">Quay lại phân tích batch review mới theo chu kỳ báo cáo.</span></li>
+            </div>
+          </div> -->
+        <!-- </div> -->
+      </section>
+
+      <section class="screen" id="screenUpload">
+        <div class="hero">
+          <div class="panel">
+            <p class="eyebrow">Upload data</p>
+            <h1>Chọn file review để phân tích</h1>
+            <!-- <p class="subtitle">Trong demo này, dropdown mô phỏng file người dùng upload. Chọn file lỗi để xem recovery path.</p> -->
+          </div>
+          <div class="panel mock-card">
+            <div>
+              <label for="datasetSelect">Chọn File mẫu</label>
+              <select id="datasetSelect">
+                <option value="june">customer_reviews_june.xlsx - dữ liệu tốt</option>
+                <option value="delivery">delivery_issues_week_25.csv - nhiều phàn nàn giao hàng</option>
+                <option value="noisy">mixed_short_reviews.json - dữ liệu nhiễu</option>
+                <option value="invalid">sales_export.xlsx - thiếu review_text</option>
+              </select>
+            </div>
+            <div class="drop-zone">
+              <strong id="fileName">customer_reviews_june.xlsx</strong>
+              <p class="muted" id="fileMeta">2,450 dòng, có cột review_text, dữ liệu UTF-8</p>
+            </div>
+            <div class="status">
+              <span class="dot" id="fileDot"></span>
+              <span id="fileStatus">Sẵn sàng kiểm tra file</span>
+            </div>
+            <div class="button-row">
+              <!-- <button class="secondary" type="button" data-go="onboarding">Quay lại</button> -->
+              <button class="button" type="button" id="validateBtn">Upload</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screenValidate">
+        <div class="panel">
+          <p class="eyebrow">Data check</p>
+          <h1 id="validateTitle">File hợp lệ</h1>
+          <p class="subtitle" id="validateBody">Hệ thống tìm thấy cột review_text và có thể bắt đầu phân tích.</p>
+          <div class="grid-4">
+            <article class="card"><span class="metric-label">Rows</span><strong class="metric-value" id="rowsMetric">0</strong><span class="metric-note">Bản ghi phát hiện</span></article>
+            <article class="card"><span class="metric-label">review_text</span><strong class="metric-value" id="columnMetric">Có</strong><span class="metric-note">Cột bắt buộc</span></article>
+            <article class="card"><span class="metric-label">Format</span><strong class="metric-value" id="formatMetric">XLSX</strong><span class="metric-note">Định dạng upload</span></article>
+            <article class="card"><span class="metric-label">Status</span><strong class="metric-value" id="readyMetric">Ready</strong><span class="metric-note">Có thể phân tích</span></article>
+          </div>
+          <div class="button-row" id="validateActions">
+            <button class="secondary" type="button" data-go="upload">Chọn file khác</button>
+            <button class="button" type="button" id="startAnalysisBtn">Chạy phân tích</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screenAnalyze">
+        <div class="panel">
+          <p class="eyebrow">Analysis running</p>
+          <h1>Đang phân tích review</h1>
+          <p class="subtitle" id="analysisText">AI đang kiểm tra sentiment, topic, confidence và đề xuất hành động.</p>
+          <div class="progress"><span id="progressBar"></span></div>
+          <div class="grid-4">
+            <article class="card"><span class="metric-label">Step</span><strong class="metric-value" id="analysisStep">1/4</strong><span class="metric-note">Pipeline</span></article>
+            <article class="card"><span class="metric-label">Core action</span><strong class="metric-value">Run</strong><span class="metric-note">Phân tích hợp lệ</span></article>
+            <article class="card"><span class="metric-label">Time</span><strong class="metric-value" id="analysisTime">0s</strong><span class="metric-note">Demo timer</span></article>
+            <article class="card"><span class="metric-label">Event</span><strong class="metric-value">Live</strong><span class="metric-note">Tracking log</span></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screenResults">
+        <div class="grid-4" id="metrics">
+          <article class="card"><span class="metric-label">Active users</span><strong class="metric-value" id="activeUsers">0</strong><span class="metric-note">Hoàn tất phân tích</span></article>
+          <article class="card"><span class="metric-label">Retention metric</span><strong class="metric-value" id="retentionMetric">MAU</strong><span class="metric-note" id="retentionNote">Monthly active retention</span></article>
+          <article class="card"><span class="metric-label">Core action rate</span><strong class="metric-value" id="coreRate">0%</strong><span class="metric-note">Upload hợp lệ đến kết quả</span></article>
+          <article class="card"><span class="metric-label">Aha moment</span><strong class="metric-value" id="ahaMoment">--</strong><span class="metric-note">Thấy insight đầu tiên</span></article>
+        </div>
+
+        <div class="result-layout">
+          <div>
+            <section class="section-card">
+              <div >
+                <div>
+                  <p class="eyebrow">Results</p>
+                  <h2>Kết quả phân tích</h2>
+                  <button class="tab active" type="button" data-panel="sentiment">Cảm xúc</button>
+                  <button class="tab" type="button" data-panel="topics">Chủ đề</button>
+                  <button class="tab" type="button" data-panel="uncertain">Cần review</button>
+                </div>
+                <p class="muted" id="overviewText">Kết quả từ file đã phân tích.</p>
+              </div>
+
+              <div id="sentimentPanel">
+                <div class="bar-row"><span>Tích cực</span><div class="track"><div class="fill positive" id="positiveBar"></div></div><strong id="positiveValue">0%</strong></div>
+                <div class="bar-row"><span>Trung lập</span><div class="track"><div class="fill neutral" id="neutralBar"></div></div><strong id="neutralValue">0%</strong></div>
+                <div class="bar-row"><span>Tiêu cực</span><div class="track"><div class="fill negative" id="negativeBar"></div></div><strong id="negativeValue">0%</strong></div>
+              </div>
+
+              <div id="topicsPanel" class="hidden">
+                <div class="table-wrap">
+                  <table>
+                    <thead><tr><th>Chủ đề</th><th>Reviews</th><th>Cảm xúc</th><th>Hành động đề xuất</th></tr></thead>
+                    <tbody id="topicsBody"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div id="uncertainPanel" class="hidden">
+                <div class="table-wrap">
+                  <table>
+                    <thead><tr><th>Review</th><th>Kết quả AI</th><th>Độ tin cậy</th><th>Hành động</th></tr></thead>
+                    <tbody id="uncertainBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <section class="section-card" id="insights">
+              <div class="section-header">
+                <div>
+                  <p class="eyebrow">Insight</p>
+                  <h2>Đề xuất hành động</h2>
+                  <p class="muted">Đây là bằng chứng người dùng đã nhận được giá trị.</p>
+                </div>
+                <span class="tag info" id="confidenceTag">Chưa có dữ liệu</span>
+              </div>
+              <ul class="insight-list" id="insightList"></ul>
+            </section>
+          </div>
+
+          <aside>
+            <section class="section-card">
+              <h2>Demo controls</h2>
+              <div class="button-row">
+                <button class="secondary" type="button" data-go="upload">Phân tích file khác</button>
+                <button class="button" type="button" data-panel-jump="uncertain">Review uncertain</button>
+              </div>
+            </section>
+            <section class="section-card">
+              <h2>Event tracking</h2>
+              <ul class="event-log" id="eventLog">
+                <li>01 app_opened</li>
+              </ul>
+            </section>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const datasets = {
+      june: {
+        file: "customer_reviews_june.xlsx",
+        meta: "2,450 dòng, có cột review_text, dữ liệu UTF-8",
+        valid: true,
+        rows: 2450,
+        activeUsers: 128,
+        coreRate: 76,
+        aha: "3m12s",
+        confidence: 87,
+        retention: "MAU",
+        retentionNote: "Monthly active retention",
+        sentiment: { positive: 64, neutral: 21, negative: 15 },
+        topics: [
+          ["Chất lượng sản phẩm", 742, "82% tích cực", "Dùng trích dẫn tích cực trong marketing"],
+          ["Giao hàng", 526, "31% tiêu cực", "Rà soát tuyến giao hàng trễ"],
+          ["Hỗ trợ khách hàng", 418, "69% tích cực", "Cải thiện phản hồi cuối tuần"],
+          ["Giá cả", 297, "44% trung lập", "Làm rõ giá trị gói dịch vụ"]
+        ],
+        uncertain: [
+          ["Sản phẩm tốt, nhưng giao hàng quá lâu.", "Hỗn hợp", 61],
+          ["Cũng tạm được.", "Trung lập", 58],
+          ["Hỗ trợ cuối cùng cũng xử lý được.", "Hỗn hợp", 63]
+        ],
+        insights: [
+          "64% review tích cực: có thể dùng quote về chất lượng sản phẩm cho chiến dịch marketing.",
+          "Giao hàng có 31% review tiêu cực: cần kiểm tra các tuyến giao hàng trễ trong tháng.",
+          "186 review có độ tin cậy thấp: nên review thủ công trước khi ra quyết định."
+        ]
+      },
+      delivery: {
+        file: "delivery_issues_week_25.csv",
+        meta: "1,180 dòng, dữ liệu tuần, nhiều phản hồi giao hàng",
+        valid: true,
+        rows: 1180,
+        activeUsers: 84,
+        coreRate: 69,
+        aha: "2m48s",
+        confidence: 81,
+        retention: "WAU",
+        retentionNote: "Weekly active retention",
+        sentiment: { positive: 38, neutral: 19, negative: 43 },
+        topics: [
+          ["Giao hàng trễ", 486, "58% tiêu cực", "Ưu tiên kiểm tra SLA theo khu vực"],
+          ["Thông báo đơn hàng", 214, "36% tiêu cực", "Cải thiện thông báo trạng thái"],
+          ["Đóng gói", 176, "64% tích cực", "Giữ quy chuẩn đóng gói hiện tại"],
+          ["Hoàn tiền", 92, "47% tiêu cực", "Rút ngắn thời gian xử lý hoàn tiền"]
+        ],
+        uncertain: [
+          ["Giao thì ổn nhưng đợi hơi mệt.", "Hỗn hợp", 59],
+          ["Không biết lỗi shipper hay shop.", "Chưa rõ", 55],
+          ["Lần này chậm hơn bình thường.", "Tiêu cực", 62]
+        ],
+        insights: [
+          "Tỷ lệ tiêu cực tăng lên 43%: đây là tín hiệu vận hành cần xử lý trong tuần.",
+          "Giao hàng trễ chiếm 486 review: nên chia nhỏ theo khu vực để tìm điểm nghẽn.",
+          "Retention nên đo theo tuần vì dữ liệu này phản ánh nhịp xử lý vận hành ngắn."
+        ]
+      },
+      noisy: {
+        file: "mixed_short_reviews.json",
+        meta: "320 dòng, nhiều review ngắn, slang và thiếu ngữ cảnh",
+        valid: true,
+        rows: 320,
+        activeUsers: 31,
+        coreRate: 42,
+        aha: "5m40s",
+        confidence: 54,
+        retention: "MAU",
+        retentionNote: "Monthly active retention",
+        sentiment: { positive: 29, neutral: 45, negative: 26 },
+        topics: [
+          ["Review quá ngắn", 118, "khó phân loại", "Yêu cầu thêm rating hoặc metadata"],
+          ["Ngôn ngữ hỗn hợp", 74, "không ổn định", "Tách theo ngôn ngữ trước khi phân tích"],
+          ["Thiếu ngữ cảnh", 63, "trung lập", "Bổ sung nguồn review và ngày tạo"],
+          ["Phản hồi hợp lệ", 65, "khá tích cực", "Chỉ dùng nhóm này cho báo cáo"]
+        ],
+        uncertain: [
+          ["ok", "Chưa rõ", 38],
+          ["hơi sao sao", "Chưa rõ", 42],
+          ["good mà cũng bực", "Hỗn hợp", 49]
+        ],
+        insights: [
+          "Độ tin cậy chỉ 54%: không nên dùng trực tiếp cho quyết định kinh doanh.",
+          "Core action rate thấp vì dữ liệu thiếu ngữ cảnh: onboarding cần hướng dẫn file mẫu rõ hơn.",
+          "Nên ưu tiên data quality report trước khi hiển thị đề xuất chiến lược."
+        ]
+      },
+      invalid: {
+        file: "sales_export.xlsx",
+        meta: "940 dòng, không có cột review_text",
+        valid: false,
+        rows: 940,
+        activeUsers: 0,
+        coreRate: 0,
+        aha: "--",
+        confidence: 0,
+        retention: "--",
+        retentionNote: "Không tính retention khi chưa có core action",
+        sentiment: { positive: 0, neutral: 0, negative: 0 },
+        topics: [],
+        uncertain: [],
+        insights: []
+      }
+    };
+
+    const state = { selected: "june", eventCount: 1 };
+    const $ = (id) => document.getElementById(id);
+
+    function logEvent(name) {
+      const item = document.createElement("li");
+      item.textContent = `${String(++state.eventCount).padStart(2, "0")} ${name}`;
+      $("eventLog").prepend(item);
+    }
+
+    function go(screen) {
+      document.querySelectorAll(".screen").forEach((item) => item.classList.remove("active"));
+      $(`screen${screen[0].toUpperCase()}${screen.slice(1)}`).classList.add("active");
+      logEvent(`screen_viewed:${screen}`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function data() { return datasets[state.selected]; }
+
+    function updateUploadPreview() {
+      const current = data();
+      $("fileName").textContent = current.file;
+      $("fileMeta").textContent = current.meta;
+      $("fileStatus").textContent = "Sẵn sàng kiểm tra file";
+      $("fileDot").className = "dot";
+      logEvent(`file_selected {file_name:"${current.file}"}`);
+    }
+
+    function validateFile() {
+      const current = data();
+      $("rowsMetric").textContent = current.rows.toLocaleString("vi-VN");
+      $("columnMetric").textContent = current.valid ? "Có" : "Thiếu";
+      $("formatMetric").textContent = current.file.split(".").pop().toUpperCase();
+      $("readyMetric").textContent = current.valid ? "Ready" : "Lỗi";
+      $("validateTitle").textContent = current.valid ? "File hợp lệ" : "Không thể xử lý file này";
+      $("validateTitle").style.color = current.valid ? "black" : "red";
+      $("validateBody").textContent = current.valid
+        ? "Hệ thống tìm thấy cột review_text và có thể bắt đầu phân tích."
+        : "File thiếu cột review_text. Hãy xem template hoặc chọn file review hợp lệ.";
+      $("validateActions").innerHTML = current.valid
+        ? '<button class="secondary" type="button" data-go="upload">Chọn file khác</button><button class="button" type="button" id="startAnalysisBtn">Chạy phân tích</button>'
+        : '<button class="button" type="button" data-go="upload">Chọn lại file</button>';
+
+      bindNavigation();
+      const start = $("startAnalysisBtn");
+      if (start) start.addEventListener("click", startAnalysis);
+      const sample = $("useSampleBtn");
+      if (sample) sample.addEventListener("click", () => {
+        state.selected = "june";
+        $("datasetSelect").value = "june";
+        updateUploadPreview();
+        logEvent('recovery_path_used {error_reason:"missing_review_text", recovery_action:"use_sample"}');
+        go("upload");
+      });
+
+      logEvent(`setup_completed {file_type:"${current.file.split(".").pop()}", row_count:${current.rows}, has_review_text:${current.valid}}`);
+      if (!current.valid) logEvent("upload_failed:missing_review_text");
+      go("validate");
+    }
+
+    function startAnalysis() {
+      go("analyze");
+      logEvent("first_core_action_started");
+      const steps = [
+        ["1/4", "Đang đọc dữ liệu review...", "25%"],
+        ["2/4", "Đang phân loại cảm xúc...", "50%"],
+        ["3/4", "Đang nhóm chủ đề và phát hiện vấn đề...", "76%"],
+        ["4/4", "Đang tạo insight và đề xuất...", "100%"]
+      ];
+      let index = 0;
+      const tick = () => {
+        const step = steps[index];
+        $("analysisStep").textContent = step[0];
+        $("analysisText").textContent = step[1];
+        $("progressBar").style.width = step[2];
+        $("analysisTime").textContent = `${index + 1}s`;
+        index += 1;
+        if (index < steps.length) {
+          window.setTimeout(tick, 520);
+        } else {
+          window.setTimeout(showResults, 420);
+        }
+      };
+      tick();
+    }
+
+    function showResults() {
+      const current = data();
+      renderMetrics(current);
+      renderBars(current.sentiment);
+      renderTopics(current.topics);
+      renderUncertain(current.uncertain);
+      renderInsights(current);
+      $("overviewText").textContent = `${current.file} - ${current.rows.toLocaleString("vi-VN")} review đã được phân tích.`;
+      logEvent(`first_core_action_completed {analysis_id:"${state.selected}_${Date.now()}", confidence_score:${current.confidence}}`);
+      logEvent('value_evidence_viewed {evidence_type:"recommendation", rank:1}');
+      logEvent(`activation_completed {time_to_value_ms:2100, insight_count:${current.insights.length}}`);
+      go("results");
+    }
+
+    function renderMetrics(current) {
+      $("activeUsers").textContent = current.activeUsers;
+      $("retentionMetric").textContent = current.retention;
+      $("retentionNote").textContent = current.retentionNote;
+      $("coreRate").textContent = `${current.coreRate}%`;
+      $("ahaMoment").textContent = current.aha;
+      $("confidenceTag").textContent = `Độ tin cậy ${current.confidence}%`;
+      $("confidenceTag").className = `tag ${current.confidence >= 80 ? "success" : current.confidence >= 60 ? "warning" : "danger"}`;
+    }
+
+    function renderBars(sentiment) {
+      $("positiveBar").style.width = `${sentiment.positive}%`;
+      $("neutralBar").style.width = `${sentiment.neutral}%`;
+      $("negativeBar").style.width = `${sentiment.negative}%`;
+      $("positiveValue").textContent = `${sentiment.positive}%`;
+      $("neutralValue").textContent = `${sentiment.neutral}%`;
+      $("negativeValue").textContent = `${sentiment.negative}%`;
+    }
+
+    function renderTopics(rows) {
+      $("topicsBody").innerHTML = rows.map((row) => `
+        <tr><td>${row[0]}</td><td>${row[1].toLocaleString("vi-VN")}</td><td>${row[2]}</td><td>${row[3]}</td></tr>
+      `).join("");
+    }
+
+    function renderUncertain(rows) {
+      $("uncertainBody").innerHTML = rows.map((row, index) => `
+        <tr>
+          <td>"${row[0]}"</td>
+          <td><span class="tag warning">${row[1]}</span></td>
+          <td>${row[2]}%</td>
+          <td><button class="ghost" type="button" data-review="${index}">Đánh dấu đã review</button></td>
+        </tr>
+      `).join("");
+      document.querySelectorAll("[data-review]").forEach((button) => {
+        button.addEventListener("click", () => {
+          button.textContent = "Đã review";
+          button.disabled = true;
+          logEvent("uncertain_item_reviewed");
+        });
+      });
+    }
+
+    function renderInsights(current) {
+      $("insightList").innerHTML = current.insights.map((item) => `<li>${item}</li>`).join("");
+    }
+
+    function switchPanel(panel) {
+      ["sentiment", "topics", "uncertain"].forEach((name) => {
+        $(`${name}Panel`).classList.toggle("hidden", name !== panel);
+      });
+      document.querySelectorAll(".tab").forEach((button) => {
+        button.classList.toggle("active", button.dataset.panel === panel);
+      });
+      logEvent(`result_panel_viewed:${panel}`);
+    }
+
+    function bindNavigation() {
+      document.querySelectorAll("[data-go]").forEach((button) => {
+        button.onclick = () => go(button.dataset.go);
+      });
+    }
+
+    $("datasetSelect").addEventListener("change", (event) => {
+      state.selected = event.target.value;
+      updateUploadPreview();
+    });
+    $("validateBtn").addEventListener("click", validateFile);
+    $("quickDemoBtn").addEventListener("click", () => {
+      state.selected = "june";
+      $("datasetSelect").value = "june";
+      updateUploadPreview();
+      logEvent("onboarding_started");
+      go("upload");
+    });
+    // $("resetBtn").addEventListener("click", () => {
+    //   state.selected = "june";
+    //   state.eventCount = 1;
+    //   $("datasetSelect").value = "june";
+    //   $("eventLog").innerHTML = "<li>01 app_opened</li>";
+    //   updateUploadPreview();
+    //   go("onboarding");
+    // });
+    document.querySelectorAll(".tab").forEach((button) => {
+      button.addEventListener("click", () => switchPanel(button.dataset.panel));
+    });
+    document.querySelector("[data-panel-jump]").addEventListener("click", () => switchPanel("uncertain"));
+
+    bindNavigation();
+    updateUploadPreview();
+  </script>
+</body>
+</html>
